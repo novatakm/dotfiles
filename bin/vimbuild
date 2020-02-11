@@ -1,0 +1,74 @@
+#!/bin/bash
+
+
+PREFIX=/usr/local/vim
+
+usage() {
+    echo "Usage: $0 [install|build] [-c CONFIGURE_OPTIONS]"
+}
+
+while getopts hc: OPT
+do
+    case $OPT in
+	h)
+	    usage
+	    exit
+	    ;;
+	c)
+	    CONFIGURE_OPTIONS="$OPTARG"
+	    ;;
+	\?)
+	    usage
+	    exit
+	    ;;
+    esac
+done
+
+if [ "$CONFIGURE_OPTIONS" = "" ]; then
+    CONFIGURE_OPTIONS="\
+    --prefix=$PREFIX \
+    --with-features=huge \
+    --enable-gui=gtk2 \
+    --enable-perlinterp \
+    --enable-pythoninterp \
+    --enable-python3interp \
+    --enable-rubyinterp \
+    --enable-luainterp \
+    --enable-multibyte \
+    --enable-fontset \
+    --disable-selinux \
+    --enable-fail-if-missing"
+fi
+
+install_dep_pkgs() {
+    apt buid-dep vim -y
+    apt install libxmu-dev libgtk2.0-dev libxpm-dev -y
+    apt install libperl-dev python-dev python3-dev ruby-dev -y
+    apt install lua5.2 liblua5.2-dev -y
+}
+
+clone_vim_repo() {
+    cd $HOME
+    git clone https://github.com/vim/vim.git
+}
+
+run_configure() {
+    cd $HOME/vim/src
+    ./configure $CONFIGURE_OPTIONS    
+}
+
+build_vim() {
+    cd $HOME/vim/src
+    make clean
+    make
+    make install
+}
+
+COMMAND=$1
+
+if [ "$COMMAND" = "install" ]; then
+    install_dep_pkgs
+    clone_vim_repo
+    run_configure
+    build_vim
+fi
