@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+TMP_DIR=/tmp
+
+usage() {
+    echo "Usage: $0 [install|apply] [-t THEME_NAME] [-i ICON_NAME]"
+    echo "available THEME_NAMEs:"
+    echo "   plano"
+    echo "available ICON_NAMEs:"
+    echo "   flat-remix"
+}
+
+get_command() {
+    if [ "$1" = "install" -o "$1" = "apply" ]; then
+	COMMAND=$1
+    else
+	COMMAND=""
+    fi
+}
+
+THEME_NAME="plano"
+ICON_NAME="flat-remix"
+COMMAND=$1; shift
+#get_command; shift
+while getopts ht:i: OPT
+do
+    case $OPT in
+	h)
+	    usage
+	    exit
+	    ;;
+	t)
+	    THEME_NAME="$OPTARG"
+	    ;;
+	i)
+	    ICON_NAME=$OPTARG
+	    ;;
+	\?)
+	    usage
+	    exit
+	    ;;
+    esac
+done
+
+install_theme() {
+    case $THEME_NAME in
+	plano)
+	    cd $HOME/.themes/
+	    git clone https://github.com/lassekongo83/plano-theme.git
+	    ;;
+	material-sweet)
+	    cd $HOME/.themes/
+	    git clone https://github.com/rafacuevas3/material-sweet-theme.git
+	    ;;
+    esac
+}
+
+install_icon() {
+    case $ICON_NAME in
+	flat-remix)
+	    cd $TMP_DIR
+	    git clone https://github.com/daniruiz/flat-remix.git
+	    cd $TMP_DIR/flat-remix/
+	    cp -ar Flat-Remix-* $HOME/.icons
+	    rm -rf $TMP_DIR/flat-remix
+
+	    ls -d $HOME/.icons/Flat-Remix-*/ | \
+		awk '{print "gtk-update-icon-cache", $1}' | \
+		sh
+	    ;;
+    esac
+}
+
+
+case $COMMAND in
+    install)
+	install_theme
+	install_icon
+	;;
+    apply)
+	install_theme
+	install_icon
+	;;
+esac
