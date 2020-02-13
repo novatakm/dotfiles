@@ -7,7 +7,8 @@ usage() {
     echo "available THEME_NAMEs:"
     echo "   plano"
     echo "available ICON_NAMEs:"
-    echo "   flat-remix"
+    echo "   flat"
+    echo "   super-ultra-flat"
 }
 
 get_command() {
@@ -48,10 +49,6 @@ install_theme() {
 	    cd $HOME/.themes/
 	    git clone https://github.com/lassekongo83/plano-theme.git
 	    ;;
-	material-sweet)
-	    cd $HOME/.themes/
-	    git clone https://github.com/rafacuevas3/material-sweet-theme.git
-	    ;;
     esac
 }
 
@@ -68,6 +65,16 @@ install_icon() {
 		awk '{print "gtk-update-icon-cache", $1}' | \
 		sh
 	    ;;
+	super-ultra-flat)
+	    cd $TMP_DIR
+	    git clone https://github.com/thiagolucio/Super-Ultra-Flat-Numix-Remix.git
+	    cd $TMP_DIR/Super-Ultra-Flat-Numix-Remix/
+	    cp -ar Super-Ultra-Flat-Numix-Remix* $HOME/.icons
+	    rm -rf $TMP_DIR/Super-Ultra-Flat-Numix-Remix/
+
+	    ls -d $HOME/.icons/Super-Ultra-Flat-Numix-Remix*/ | \
+		awk '{print "gtk-update-icon-cache", $1}' | \
+		sh
     esac
 }
 
